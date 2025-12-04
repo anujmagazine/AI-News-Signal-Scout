@@ -1,0 +1,5 @@
+{
+  "name": "AI SIFT Visualization Tool",
+  "description": "An automated AI news sifting tool for leaders using the SIFT framework.",
+  "requestFramePermissions": []
+}

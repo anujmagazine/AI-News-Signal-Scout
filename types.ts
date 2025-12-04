@@ -1,0 +1,41 @@
+import { LucideIcon } from 'lucide-react';
+
+export interface NewsItem {
+  id: string;
+  headline: string;
+  source: string;
+  summary: string;
+  relevance: string;
+  priority: 'High' | 'Medium' | 'Low';
+  action: string;
+  actionReason: string;
+}
+
+export interface GroundingSource {
+  title: string;
+  uri: string;
+}
+
+export interface AppState {
+  step: 'input' | 'sifting' | 'results';
+  profession: string;
+  file: File | null;
+  newsItems: NewsItem[];
+  groundingSources: GroundingSource[];
+  error: string | null;
+}
+
+export type ScanResult = 'noise' | 'signal' | null;
+
+export type IdentifyResult = 'low' | 'relevant' | null;
+
+export type FilterResult = 'completed' | null;
+
+export type ActionSelection = string | null;
+
+export interface ActionOption {
+  id: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}

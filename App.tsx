@@ -80,19 +80,31 @@ const App: React.FC = () => {
         });
       }
 
+      // Calculate dates for strict timeframe
+      const today = new Date();
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(today.getMonth() - 1);
+      
+      const todayStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const oneMonthAgoStr = oneMonthAgo.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
       // Construct prompt
       const promptText = `
         You are an elite intelligence analyst for a leader. 
         Your goal is to apply the SIFT framework (Scan, Identify, Filter, Take Action) to find and process AI news.
         
+        CURRENT DATE: ${todayStr}
+        TIMEFRAME: ${oneMonthAgoStr} to ${todayStr} (Last 1 Month)
+
         USER PROFILE:
         ${profession}
         ${file ? "[A profile document is also attached for context]" : ""}
 
         TASK:
-        1. Search Google for the most significant AI news, trends, or breakthroughs from the last 7-14 days.
-        2. STRICTLY FILTER: Only select items that are highly relevant to this user's specific profile and industry. Discard generic hype.
-        3. Analyze the top 3-5 items using SIFT.
+        1. Search Google for the most significant AI news, trends, or breakthroughs strictly within the TIMEFRAME specified above.
+        2. CRITICAL: Do NOT include any news older than ${oneMonthAgoStr}. If a piece of news is older, discard it immediately.
+        3. STRICTLY FILTER: Only select items that are highly relevant to this user's specific profile and industry. Discard generic hype.
+        4. Analyze the top 3-5 items using SIFT.
 
         OUTPUT FORMAT:
         Output a list of items separated by "|||".
@@ -165,7 +177,7 @@ const App: React.FC = () => {
           <div className="max-w-2xl mx-auto text-center py-20 animate-fade-in">
              <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
              <h2 className="text-2xl font-bold mb-2">Sifting the Signal...</h2>
-             <p className="text-gray-500">Scanning global news, analyzing relevance to your profile, and prioritizing actions.</p>
+             <p className="text-gray-500">Scanning global news from the last 30 days, analyzing relevance to your profile, and prioritizing actions.</p>
           </div>
         )}
 

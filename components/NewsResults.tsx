@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, ShieldAlert, Target, Filter, Play, RefreshCw, AlertTriangle } from 'lucide-react';
+import { ExternalLink, ShieldAlert, Target, Filter, Play, RefreshCw, AlertTriangle, Calendar } from 'lucide-react';
 import { NewsItem, GroundingSource } from '../types';
 
 interface NewsResultsProps {
@@ -49,9 +49,18 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, onReset }) =>
                 </span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-1 leading-tight">{item.headline}</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-3">
                 <span className="font-medium text-gray-700">{item.source}</span>
                 <span>•</span>
+                {item.date && (
+                  <>
+                    <span className="flex items-center gap-1 text-gray-600">
+                      <Calendar size={12} />
+                      {item.date}
+                    </span>
+                    <span>•</span>
+                  </>
+                )}
                 <span className="italic">AI Sifted Summary</span>
               </div>
               <p className="text-gray-600 leading-relaxed">{item.summary}</p>

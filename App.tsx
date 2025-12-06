@@ -46,6 +46,7 @@ const App: React.FC = () => {
           
           if (lowerKey.includes('headline')) item.headline = value;
           else if (lowerKey.includes('source')) item.source = value;
+          else if (lowerKey.includes('date')) item.date = value;
           else if (lowerKey.includes('summary')) item.summary = value;
           else if (lowerKey.includes('relevance')) item.relevance = value;
           else if (lowerKey.includes('priority')) item.priority = value as any;
@@ -112,6 +113,7 @@ const App: React.FC = () => {
         
         Headline: [Concise Title]
         Source: [Source Name]
+        Date: [Date of publication, e.g. Oct 25, 2024]
         Summary: [2-sentence executive summary]
         Relevance: [Why this matters to the user's specific role]
         Priority: [High/Medium/Low]

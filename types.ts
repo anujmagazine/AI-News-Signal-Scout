@@ -4,6 +4,7 @@ export interface NewsItem {
   id: string;
   headline: string;
   source: string;
+  date: string;
   summary: string;
   relevance: string;
   priority: 'High' | 'Medium' | 'Low';

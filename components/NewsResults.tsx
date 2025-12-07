@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, ShieldAlert, Target, Filter, Play, RefreshCw, AlertTriangle, Calendar } from 'lucide-react';
+import { ExternalLink, ShieldAlert, Target, Play, RefreshCw, AlertTriangle, Calendar } from 'lucide-react';
 import { NewsItem, GroundingSource } from '../types';
 
 interface NewsResultsProps {
@@ -13,8 +13,8 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, onReset }) =>
     <div className="animate-fade-in max-w-4xl mx-auto pb-20">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Sifted Intelligence</h2>
-          <p className="text-gray-500">Top prioritized signals based on your profile</p>
+          <h2 className="text-2xl font-bold text-gray-900">Strategic Signals</h2>
+          <p className="text-gray-500">Top prioritized insights based on your profile</p>
         </div>
         <button 
           onClick={onReset}
@@ -61,17 +61,17 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, onReset }) =>
                     <span>•</span>
                   </>
                 )}
-                <span className="italic">AI Sifted Summary</span>
+                <span className="italic">AI Analysis</span>
               </div>
               <p className="text-gray-600 leading-relaxed">{item.summary}</p>
             </div>
 
-            {/* SIFT Analysis Grid */}
+            {/* Analysis Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200">
               <div className="bg-white p-6">
                 <div className="flex items-center gap-2 mb-3 text-blue-700 font-bold text-sm uppercase tracking-wide">
                   <Target size={16} />
-                  Identify: Relevance
+                  Why It Matters
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">{item.relevance}</p>
               </div>
@@ -79,7 +79,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, onReset }) =>
               <div className="bg-white p-6">
                 <div className="flex items-center gap-2 mb-3 text-purple-700 font-bold text-sm uppercase tracking-wide">
                   <Play size={16} />
-                  Take Action: {item.action}
+                  Recommended Action: {item.action}
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">{item.actionReason}</p>
               </div>

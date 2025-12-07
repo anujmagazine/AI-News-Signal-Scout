@@ -34,8 +34,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
     <div className="max-w-2xl mx-auto animate-fade-in">
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <div className="bg-gray-50 p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Configure Your SIFT</h2>
-          <p className="text-gray-500 text-sm mt-1">Tell us about your role so we can filter the noise.</p>
+          <h2 className="text-xl font-bold text-gray-900">Personalize Your Briefing</h2>
+          <p className="text-gray-500 text-sm mt-1">Tell us about your role so we can filter out the hype.</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -112,12 +112,12 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
             {isLoading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Sifting Global News...
+                Scanning Global News...
               </>
             ) : (
               <>
                 <Search size={20} />
-                Sift Relevant AI News
+                Generate Intelligence
               </>
             )}
           </button>

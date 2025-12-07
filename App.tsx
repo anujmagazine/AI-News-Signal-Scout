@@ -156,7 +156,7 @@ const App: React.FC = () => {
       setState(prev => ({
         ...prev,
         step: 'input',
-        error: "Failed to sift news. Please try again or check your API key configuration."
+        error: "Failed to analyze news. Please try again or check your API key configuration."
       }));
     }
   };
@@ -178,8 +178,8 @@ const App: React.FC = () => {
         {state.step === 'sifting' && (
           <div className="max-w-2xl mx-auto text-center py-20 animate-fade-in">
              <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-             <h2 className="text-2xl font-bold mb-2">Sifting the Signal...</h2>
-             <p className="text-gray-500">Scanning global news from the last 30 days, analyzing relevance to your profile, and prioritizing actions.</p>
+             <h2 className="text-2xl font-bold mb-2">Analyzing the Signal...</h2>
+             <p className="text-gray-500">Scanning global news from the last 30 days, filtering noise, and identifying strategic relevance.</p>
           </div>
         )}
 

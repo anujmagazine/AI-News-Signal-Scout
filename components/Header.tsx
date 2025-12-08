@@ -19,9 +19,9 @@ const Header: React.FC = () => {
         </span>
       </div>
       <p className="text-lg text-gray-500 font-medium mb-6 max-w-2xl mx-auto">
-        Your strategic intelligence filter.
+        AI news that actually matters to you.
         <br/>
-        <span className="text-sm text-gray-400">Upload your profile to cut through the noise and find the AI developments that actually matter to you.</span>
+        <span className="text-sm text-gray-400">Upload your profile to cut through the noise and find the developments relevant to your work.</span>
       </p>
     </div>
   );

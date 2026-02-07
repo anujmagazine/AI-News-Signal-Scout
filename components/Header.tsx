@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Radio, Sparkles } from 'lucide-react';
 
@@ -18,11 +19,10 @@ const Header: React.FC = () => {
           AI Powered
         </span>
       </div>
-      <p className="text-lg text-gray-500 font-medium mb-6 max-w-2xl mx-auto">
-        AI news that actually matters to you.
-        <br/>
-        <span className="text-sm text-gray-400">Upload your profile to cut through the noise and find the developments relevant to your work.</span>
-      </p>
+      <div className="text-lg text-gray-500 font-medium mb-6 max-w-2xl mx-auto">
+        <p>AI news from the last 30 days that actually matters to you.</p>
+        <p className="text-sm text-gray-400 mt-1">Upload your profile to cut through the noise and find the developments relevant to your work.</p>
+      </div>
     </div>
   );
 };

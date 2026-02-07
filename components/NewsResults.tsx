@@ -1,14 +1,16 @@
+
 import React from 'react';
-import { ExternalLink, ShieldAlert, Target, Play, RefreshCw, AlertTriangle, Calendar } from 'lucide-react';
+import { ExternalLink, ShieldAlert, Target, Play, RefreshCw, AlertTriangle, Calendar, UserCheck } from 'lucide-react';
 import { NewsItem, GroundingSource } from '../types';
 
 interface NewsResultsProps {
   items: NewsItem[];
   sources: GroundingSource[];
+  analysisContext: string;
   onReset: () => void;
 }
 
-const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, onReset }) => {
+const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisContext, onReset }) => {
   return (
     <div className="animate-fade-in max-w-4xl mx-auto pb-20">
       <div className="flex justify-between items-end mb-8">
@@ -24,6 +26,20 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, onReset }) =>
           New Search
         </button>
       </div>
+
+      {analysisContext && (
+        <div className="mb-10 bg-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm flex gap-4 items-start">
+          <div className="bg-blue-600 p-2 rounded-lg text-white mt-1 shrink-0">
+            <UserCheck size={20} />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-blue-900 uppercase tracking-wider mb-1">Intelligence Focus</h4>
+            <p className="text-blue-800 leading-relaxed text-sm md:text-base">
+              {analysisContext}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
         {items.length === 0 ? (

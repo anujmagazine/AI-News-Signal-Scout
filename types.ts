@@ -1,3 +1,4 @@
+
 import { LucideIcon } from 'lucide-react';
 
 export interface NewsItem {
@@ -23,6 +24,7 @@ export interface AppState {
   file: File | null;
   newsItems: NewsItem[];
   groundingSources: GroundingSource[];
+  analysisContext: string;
   error: string | null;
 }
 

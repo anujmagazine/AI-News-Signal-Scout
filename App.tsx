@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import Header from './components/Header';
@@ -12,6 +13,7 @@ const App: React.FC = () => {
     file: null,
     newsItems: [],
     groundingSources: [],
+    analysisContext: '',
     error: null,
   });
 
@@ -29,10 +31,15 @@ const App: React.FC = () => {
     });
   };
 
-  const parseResponse = (text: string): NewsItem[] => {
+  const parseResponse = (text: string): { context: string; items: NewsItem[] } => {
+    const parts = text.split('|||').map(s => s.trim());
+    
+    // First part is the context analysis
+    const contextHeader = parts[0] || '';
+    const analysisContext = contextHeader.replace(/^(Analysis Context:|Context Analysis:)/i, '').trim();
+    
     const items: NewsItem[] = [];
-    // Split by the delimiter |||
-    const rawItems = text.split('|||').map(s => s.trim()).filter(s => s.length > 0);
+    const rawItems = parts.slice(1).filter(s => s.length > 0);
 
     rawItems.forEach((raw, index) => {
       const lines = raw.split('\n');
@@ -60,7 +67,7 @@ const App: React.FC = () => {
       }
     });
 
-    return items;
+    return { context: analysisContext, items };
   };
 
   const handleSift = async (profession: string, file: File | null) => {
@@ -70,7 +77,6 @@ const App: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const parts: any[] = [];
 
-      // Add file if exists
       if (file) {
         const base64Data = await fileToBase64(file);
         parts.push({
@@ -81,7 +87,6 @@ const App: React.FC = () => {
         });
       }
 
-      // Calculate dates for strict timeframe
       const today = new Date();
       const oneMonthAgo = new Date();
       oneMonthAgo.setMonth(today.getMonth() - 1);
@@ -89,7 +94,6 @@ const App: React.FC = () => {
       const todayStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
       const oneMonthAgoStr = oneMonthAgo.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-      // Construct prompt
       const promptText = `
         You are an elite intelligence analyst for a leader. 
         Your goal is to apply the SIFT framework (Scan, Identify, Filter, Take Action) to find and process AI news.
@@ -102,30 +106,27 @@ const App: React.FC = () => {
         ${file ? "[A profile document is also attached for context]" : ""}
 
         TASK:
-        1. Search Google for the most significant AI news, trends, or breakthroughs strictly within the TIMEFRAME specified above.
-        2. CRITICAL: Do NOT include any news older than ${oneMonthAgoStr}. If a piece of news is older, discard it immediately.
-        3. STRICTLY FILTER: Only select items that are highly relevant to this user's specific profile and industry. Discard generic hype.
-        4. Analyze the top 3-5 items using SIFT.
+        1. FIRST, provide a 2-3 sentence "Analysis Context" identifying the key parts of the user's role or resume that are driving your search and filtering criteria.
+        2. Search Google for the most significant AI news, trends, or breakthroughs strictly within the TIMEFRAME specified above.
+        3. CRITICAL: Do NOT include any news older than ${oneMonthAgoStr}. Discard if older.
+        4. STRICTLY FILTER: Only select 3-5 items that are highly relevant to this user's specific profile and industry. Discard generic hype.
 
         OUTPUT FORMAT:
-        Output a list of items separated by "|||".
-        Inside each item, use exactly this format (plain text, no markdown bolding for keys):
-        
-        Headline: [Concise Title]
-        Source: [Source Name]
-        Date: [Date of publication, e.g. Oct 25, 2024]
-        Summary: [2-sentence executive summary]
-        Relevance: [Why this matters to the user's specific role]
-        Priority: [High/Medium/Low]
-        Action: [Recommended action: Archive / Monitor / Discuss / Delegate / Experiment]
-        Reason: [Brief justification for the action]
+        Start with:
+        Analysis Context: [Your summary of user focus]
         |||
+        Headline: [Concise Title]
+        ... (rest of item fields)
+        |||
+        Headline: ...
+        
+        (Use "|||" as a separator between the context and each news item. Use exactly the field names: Headline, Source, Date, Summary, Relevance, Priority, Action, Reason)
       `;
 
       parts.push({ text: promptText });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         contents: { parts },
         config: {
           tools: [{ googleSearch: {} }],
@@ -133,9 +134,8 @@ const App: React.FC = () => {
       });
 
       const text = response.text || '';
-      const newsItems = parseResponse(text);
+      const { context, items: newsItems } = parseResponse(text);
       
-      // Extract grounding sources
       const sources: GroundingSource[] = [];
       const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
       chunks.forEach((chunk: any) => {
@@ -148,6 +148,7 @@ const App: React.FC = () => {
         ...prev,
         step: 'results',
         newsItems,
+        analysisContext: context,
         groundingSources: sources
       }));
 
@@ -156,13 +157,13 @@ const App: React.FC = () => {
       setState(prev => ({
         ...prev,
         step: 'input',
-        error: "Failed to analyze news. Please try again or check your API key configuration."
+        error: "Failed to analyze news. Please try again or check your configuration."
       }));
     }
   };
 
   const handleReset = () => {
-    setState(prev => ({ ...prev, step: 'input', newsItems: [], groundingSources: [] }));
+    setState(prev => ({ ...prev, step: 'input', newsItems: [], groundingSources: [], analysisContext: '' }));
     window.scrollTo(0, 0);
   };
 
@@ -179,7 +180,7 @@ const App: React.FC = () => {
           <div className="max-w-2xl mx-auto text-center py-20 animate-fade-in">
              <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
              <h2 className="text-2xl font-bold mb-2">Analyzing the Signal...</h2>
-             <p className="text-gray-500">Scanning global news from the last 30 days, filtering noise, and identifying strategic relevance.</p>
+             <p className="text-gray-500">Scanning global news from the last 30 days, filtering noise, and identifying strategic relevance based on your profile.</p>
           </div>
         )}
 
@@ -187,12 +188,13 @@ const App: React.FC = () => {
           <NewsResults 
             items={state.newsItems} 
             sources={state.groundingSources} 
+            analysisContext={state.analysisContext}
             onReset={handleReset} 
           />
         )}
 
         {state.error && (
-          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg">
+          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50">
             {state.error}
           </div>
         )}

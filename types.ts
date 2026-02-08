@@ -27,6 +27,8 @@ export interface AppState {
   newsItems: NewsItem[];
   groundingSources: GroundingSource[];
   analysisContext: string;
+  strategicSummary: string;
+  groundLevelSummary: string;
   error: string | null;
 }
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   ExternalLink, ShieldAlert, Target, Play, RefreshCw, 
-  AlertTriangle, Calendar, UserCheck, Globe, Zap, Clock 
+  AlertTriangle, Calendar, UserCheck, Globe, Zap, Clock, ChevronRight
 } from 'lucide-react';
 import { NewsItem, GroundingSource } from '../types';
 
@@ -10,10 +10,19 @@ interface NewsResultsProps {
   items: NewsItem[];
   sources: GroundingSource[];
   analysisContext: string;
+  strategicSummary: string;
+  groundLevelSummary: string;
   onReset: () => void;
 }
 
-const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisContext, onReset }) => {
+const NewsResults: React.FC<NewsResultsProps> = ({ 
+  items, 
+  sources, 
+  analysisContext, 
+  strategicSummary, 
+  groundLevelSummary, 
+  onReset 
+}) => {
   const strategicItems = items.filter(item => item.category === 'strategic');
   const groundLevelItems = items.filter(item => item.category === 'ground-level');
 
@@ -81,7 +90,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisConte
   );
 
   return (
-    <div className="animate-fade-in max-w-4xl mx-auto pb-20">
+    <div className="animate-fade-in max-w-5xl mx-auto pb-20">
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Intelligence Briefing</h2>
@@ -97,7 +106,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisConte
       </div>
 
       {analysisContext && (
-        <div className="mb-12 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex gap-5 items-start">
+        <div className="mb-8 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex gap-5 items-start">
           <div className="bg-blue-600 p-3 rounded-xl text-white mt-1 shrink-0 shadow-lg shadow-blue-500/20">
             <UserCheck size={24} />
           </div>
@@ -110,19 +119,59 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisConte
         </div>
       )}
 
-      {/* 1. STRATEGIC VIEW */}
-      <section className="mb-16">
-        <div className="flex items-center gap-3 mb-6 border-b border-gray-200 pb-4">
-          <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
-            <Globe size={24} />
+      {/* SIDE-BY-SIDE SUMMARY DASHBOARD */}
+      {(strategicSummary || groundLevelSummary) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+          {/* Strategic View Summary */}
+          <div className="bg-white border border-blue-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-4 text-blue-700">
+              <Globe size={20} />
+              <h4 className="font-bold text-sm uppercase tracking-widest">10,000-ft Horizon</h4>
+            </div>
+            <div className="space-y-3">
+              {strategicSummary.split(/;|•|\n/).filter(s => s.trim().length > 0).map((point, i) => (
+                <div key={i} className="flex gap-3 items-start group">
+                  <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-blue-400 group-hover:scale-125 transition-transform" />
+                  <p className="text-sm text-gray-700 leading-snug">{point.trim()}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">Strategic View</h3>
-            <p className="text-sm text-gray-500">10,000-ft Perspective: Direction, Risk, and Global Reshaping</p>
+
+          {/* Ground Level Summary */}
+          <div className="bg-white border border-orange-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-4 text-orange-700">
+              <Zap size={20} />
+              <h4 className="font-bold text-sm uppercase tracking-widest">Execution Focus</h4>
+            </div>
+            <div className="space-y-3">
+              {groundLevelSummary.split(/;|•|\n/).filter(s => s.trim().length > 0).map((point, i) => (
+                <div key={i} className="flex gap-3 items-start group">
+                  <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-orange-400 group-hover:scale-125 transition-transform" />
+                  <p className="text-sm text-gray-700 leading-snug">{point.trim()}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      )}
+
+      {/* 1. STRATEGIC VIEW DETAILS */}
+      <section className="mb-20">
+        <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
+              <Globe size={24} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight">Strategic Intelligence</h3>
+              <p className="text-sm text-gray-500">Directional signals & long-term industry impact</p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded uppercase tracking-tighter">View 01</span>
+        </div>
         
-        <div className="space-y-8">
+        <div className="space-y-10">
           {strategicItems.length > 0 ? (
             strategicItems.map(renderNewsItem)
           ) : (
@@ -131,19 +180,22 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisConte
         </div>
       </section>
 
-      {/* 2. GROUND-LEVEL VIEW */}
-      <section className="mb-16">
-        <div className="flex items-center gap-3 mb-6 border-b border-gray-200 pb-4">
-          <div className="p-2 bg-orange-100 text-orange-700 rounded-lg">
-            <Zap size={24} />
+      {/* 2. GROUND-LEVEL VIEW DETAILS */}
+      <section className="mb-20">
+        <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-orange-100 text-orange-700 rounded-lg">
+              <Zap size={24} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight">Execution Sense</h3>
+              <p className="text-sm text-gray-500">Modern tools & pragmatic daily applications</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">Ground-level View</h3>
-            <p className="text-sm text-gray-500">Execution Sense: Tools, Models, and Applied Scenarios</p>
-          </div>
+          <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded uppercase tracking-tighter">View 02</span>
         </div>
         
-        <div className="space-y-8">
+        <div className="space-y-10">
           {groundLevelItems.length > 0 ? (
             groundLevelItems.map(renderNewsItem)
           ) : (
@@ -162,7 +214,10 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisConte
 
       {sources.length > 0 && (
         <div className="mt-12 pt-8 border-t border-gray-200">
-          <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Evidence & Source Grounding</h4>
+          <div className="flex items-center gap-2 mb-4 text-gray-400">
+            <h4 className="text-sm font-bold uppercase tracking-widest">Evidence Base</h4>
+            <div className="h-px bg-gray-200 flex-grow" />
+          </div>
           <div className="flex flex-wrap gap-3">
             {sources.map((source, i) => (
               <a 
@@ -170,9 +225,9 @@ const NewsResults: React.FC<NewsResultsProps> = ({ items, sources, analysisConte
                 href={source.uri} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 text-xs rounded border border-gray-200 hover:bg-white hover:border-gray-300 hover:text-blue-600 transition-colors truncate max-w-md"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-600 text-xs font-medium rounded-lg border border-gray-200 hover:border-black hover:text-black transition-all shadow-sm truncate max-w-xs"
               >
-                <ExternalLink size={10} />
+                <ExternalLink size={12} className="shrink-0" />
                 {source.title || new URL(source.uri).hostname}
               </a>
             ))}

@@ -14,6 +14,8 @@ const App: React.FC = () => {
     newsItems: [],
     groundingSources: [],
     analysisContext: '',
+    strategicSummary: '',
+    groundLevelSummary: '',
     error: null,
   });
 
@@ -30,20 +32,31 @@ const App: React.FC = () => {
     });
   };
 
-  const parseResponse = (text: string): { context: string; items: NewsItem[] } => {
+  const parseResponse = (text: string): { context: string; strategicSummary: string; groundLevelSummary: string; items: NewsItem[] } => {
     const parts = text.split('|||').map(s => s.trim());
     
-    const contextHeader = parts[0] || '';
-    const analysisContext = contextHeader.replace(/^(Analysis Context:|Context Analysis:)/i, '').trim();
+    const headerSection = parts[0] || '';
+    const lines = headerSection.split('\n');
+    
+    let analysisContext = '';
+    let strategicSummary = '';
+    let groundLevelSummary = '';
+
+    lines.forEach(line => {
+      const lower = line.toLowerCase();
+      if (lower.startsWith('analysis context:')) analysisContext = line.split(':')[1]?.trim() || '';
+      else if (lower.startsWith('strategic summary:')) strategicSummary = line.split(':')[1]?.trim() || '';
+      else if (lower.startsWith('ground-level summary:')) groundLevelSummary = line.split(':')[1]?.trim() || '';
+    });
     
     const items: NewsItem[] = [];
     const rawItems = parts.slice(1).filter(s => s.length > 0);
 
     rawItems.forEach((raw, index) => {
-      const lines = raw.split('\n');
+      const itemLines = raw.split('\n');
       const item: any = { id: `news-${index}`, category: 'strategic' };
       
-      lines.forEach(line => {
+      itemLines.forEach(line => {
         const [key, ...valueParts] = line.split(':');
         if (key && valueParts.length > 0) {
           const value = valueParts.join(':').trim();
@@ -69,7 +82,7 @@ const App: React.FC = () => {
       }
     });
 
-    return { context: analysisContext, items };
+    return { context: analysisContext, strategicSummary, groundLevelSummary, items };
   };
 
   const handleSift = async (profession: string, file: File | null) => {
@@ -106,19 +119,16 @@ const App: React.FC = () => {
 
         TASK:
         1. FIRST, provide a brief "Analysis Context" on the user's strategic focus.
-        2. Deliver exactly 4-6 high-signal items split into TWO categories:
-
-        CATEGORY 1: Strategic View (10,000-ft perspective – “Direction Sense”)
-        - Focus: Where AI has reached, where it is headed, reshaping of asset-heavy industries, governance, and risk.
-        - Field mapping: Category: Strategic
-
-        CATEGORY 2: Ground-level View (Execution Sense)
-        - Focus: Modern AI tools, frontier models applied, and a realistic "Day-in-the-life" scenario for this user.
-        - Field mapping: Category: Ground-level
-        - Additional Field: Scenario: [A specific day-in-the-life example]
+        2. Provide a "Strategic Summary" (2-3 concise bullet points about high-level shifts).
+        3. Provide a "Ground-level Summary" (2-3 concise bullet points about tactical tools/scenarios).
+        4. Deliver exactly 4-6 high-signal items split into TWO categories:
+           Category 1: Strategic View (10,000-ft perspective)
+           Category 2: Ground-level View (Execution sense)
 
         OUTPUT FORMAT:
         Analysis Context: [Summary]
+        Strategic Summary: [Point 1; Point 2; Point 3]
+        Ground-level Summary: [Point 1; Point 2; Point 3]
         |||
         Category: Strategic
         Headline: [Title]
@@ -135,7 +145,6 @@ const App: React.FC = () => {
         ...
         Scenario: [How the user uses this today]
         ...
-        (Use "|||" strictly as item separator)
       `;
 
       parts.push({ text: promptText });
@@ -149,7 +158,7 @@ const App: React.FC = () => {
       });
 
       const text = response.text || '';
-      const { context, items: newsItems } = parseResponse(text);
+      const parsed = parseResponse(text);
       
       const sources: GroundingSource[] = [];
       const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
@@ -162,8 +171,10 @@ const App: React.FC = () => {
       setState(prev => ({
         ...prev,
         step: 'results',
-        newsItems,
-        analysisContext: context,
+        newsItems: parsed.items,
+        analysisContext: parsed.context,
+        strategicSummary: parsed.strategicSummary,
+        groundLevelSummary: parsed.groundLevelSummary,
         groundingSources: sources
       }));
 
@@ -178,7 +189,15 @@ const App: React.FC = () => {
   };
 
   const handleReset = () => {
-    setState(prev => ({ ...prev, step: 'input', newsItems: [], groundingSources: [], analysisContext: '' }));
+    setState(prev => ({ 
+      ...prev, 
+      step: 'input', 
+      newsItems: [], 
+      groundingSources: [], 
+      analysisContext: '',
+      strategicSummary: '',
+      groundLevelSummary: '' 
+    }));
     window.scrollTo(0, 0);
   };
 
@@ -204,6 +223,8 @@ const App: React.FC = () => {
             items={state.newsItems} 
             sources={state.groundingSources} 
             analysisContext={state.analysisContext}
+            strategicSummary={state.strategicSummary}
+            groundLevelSummary={state.groundLevelSummary}
             onReset={handleReset} 
           />
         )}

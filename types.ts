@@ -3,6 +3,7 @@ import { LucideIcon } from 'lucide-react';
 
 export interface NewsItem {
   id: string;
+  category: 'strategic' | 'ground-level';
   headline: string;
   source: string;
   date: string;
@@ -11,6 +12,7 @@ export interface NewsItem {
   priority: 'High' | 'Medium' | 'Low';
   action: string;
   actionReason: string;
+  scenario?: string; // Specific for ground-level view
 }
 
 export interface GroundingSource {

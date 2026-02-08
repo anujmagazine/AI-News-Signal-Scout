@@ -22,7 +22,6 @@ const App: React.FC = () => {
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
-        // Remove data URL prefix (e.g., "data:application/pdf;base64,")
         const base64 = result.split(',')[1];
         resolve(base64);
       };
@@ -34,7 +33,6 @@ const App: React.FC = () => {
   const parseResponse = (text: string): { context: string; items: NewsItem[] } => {
     const parts = text.split('|||').map(s => s.trim());
     
-    // First part is the context analysis
     const contextHeader = parts[0] || '';
     const analysisContext = contextHeader.replace(/^(Analysis Context:|Context Analysis:)/i, '').trim();
     
@@ -43,7 +41,7 @@ const App: React.FC = () => {
 
     rawItems.forEach((raw, index) => {
       const lines = raw.split('\n');
-      const item: any = { id: `news-${index}` };
+      const item: any = { id: `news-${index}`, category: 'strategic' };
       
       lines.forEach(line => {
         const [key, ...valueParts] = line.split(':');
@@ -51,7 +49,10 @@ const App: React.FC = () => {
           const value = valueParts.join(':').trim();
           const lowerKey = key.trim().toLowerCase();
           
-          if (lowerKey.includes('headline')) item.headline = value;
+          if (lowerKey.includes('category')) {
+            item.category = value.toLowerCase().includes('ground') ? 'ground-level' : 'strategic';
+          }
+          else if (lowerKey.includes('headline')) item.headline = value;
           else if (lowerKey.includes('source')) item.source = value;
           else if (lowerKey.includes('date')) item.date = value;
           else if (lowerKey.includes('summary')) item.summary = value;
@@ -59,6 +60,7 @@ const App: React.FC = () => {
           else if (lowerKey.includes('priority')) item.priority = value as any;
           else if (lowerKey.includes('action') && !lowerKey.includes('reason')) item.action = value;
           else if (lowerKey.includes('reason')) item.actionReason = value;
+          else if (lowerKey.includes('scenario')) item.scenario = value;
         }
       });
 
@@ -96,31 +98,44 @@ const App: React.FC = () => {
 
       const promptText = `
         You are an elite intelligence analyst for a leader. 
-        Your goal is to apply the SIFT framework (Scan, Identify, Filter, Take Action) to find and process AI news.
-        
-        CURRENT DATE: ${todayStr}
-        TIMEFRAME: ${oneMonthAgoStr} to ${todayStr} (Last 1 Month)
+        Apply the SIFT framework to find and process AI news from the last month (${oneMonthAgoStr} to ${todayStr}).
 
         USER PROFILE:
         ${profession}
-        ${file ? "[A profile document is also attached for context]" : ""}
+        ${file ? "[Profile document attached]" : ""}
 
         TASK:
-        1. FIRST, provide a 2-3 sentence "Analysis Context" identifying the key parts of the user's role or resume that are driving your search and filtering criteria.
-        2. Search Google for the most significant AI news, trends, or breakthroughs strictly within the TIMEFRAME specified above.
-        3. CRITICAL: Do NOT include any news older than ${oneMonthAgoStr}. Discard if older.
-        4. STRICTLY FILTER: Only select 3-5 items that are highly relevant to this user's specific profile and industry. Discard generic hype.
+        1. FIRST, provide a brief "Analysis Context" on the user's strategic focus.
+        2. Deliver exactly 4-6 high-signal items split into TWO categories:
+
+        CATEGORY 1: Strategic View (10,000-ft perspective – “Direction Sense”)
+        - Focus: Where AI has reached, where it is headed, reshaping of asset-heavy industries, governance, and risk.
+        - Field mapping: Category: Strategic
+
+        CATEGORY 2: Ground-level View (Execution Sense)
+        - Focus: Modern AI tools, frontier models applied, and a realistic "Day-in-the-life" scenario for this user.
+        - Field mapping: Category: Ground-level
+        - Additional Field: Scenario: [A specific day-in-the-life example]
 
         OUTPUT FORMAT:
-        Start with:
-        Analysis Context: [Your summary of user focus]
+        Analysis Context: [Summary]
         |||
-        Headline: [Concise Title]
-        ... (rest of item fields)
+        Category: Strategic
+        Headline: [Title]
+        Source: [Source]
+        Date: [Date]
+        Summary: [Summary]
+        Relevance: [Strategic impact]
+        Priority: [High/Medium/Low]
+        Action: [Next Step]
+        Reason: [Why this action]
         |||
-        Headline: ...
-        
-        (Use "|||" as a separator between the context and each news item. Use exactly the field names: Headline, Source, Date, Summary, Relevance, Priority, Action, Reason)
+        Category: Ground-level
+        Headline: [Tool/Model Title]
+        ...
+        Scenario: [How the user uses this today]
+        ...
+        (Use "|||" strictly as item separator)
       `;
 
       parts.push({ text: promptText });
@@ -157,7 +172,7 @@ const App: React.FC = () => {
       setState(prev => ({
         ...prev,
         step: 'input',
-        error: "Failed to analyze news. Please try again or check your configuration."
+        error: "Failed to analyze news. Please try again."
       }));
     }
   };
@@ -180,7 +195,7 @@ const App: React.FC = () => {
           <div className="max-w-2xl mx-auto text-center py-20 animate-fade-in">
              <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
              <h2 className="text-2xl font-bold mb-2">Analyzing the Signal...</h2>
-             <p className="text-gray-500">Scanning global news from the last 30 days, filtering noise, and identifying strategic relevance based on your profile.</p>
+             <p className="text-gray-500">Scanning global news, synthesizing strategic perspectives, and mapping ground-level execution scenarios.</p>
           </div>
         )}
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { 
   ExternalLink, ShieldAlert, Target, Play, RefreshCw, 
   AlertTriangle, Calendar, UserCheck, Globe, Zap, Clock, 
-  ChevronRight, List, BrainCircuit, Activity
+  ChevronRight, List, BrainCircuit, Activity, BookOpen
 } from 'lucide-react';
 import { NewsItem, GroundingSource } from '../types';
 
@@ -106,29 +106,29 @@ const NewsResults: React.FC<NewsResultsProps> = ({
         </button>
       </div>
 
-      {/* 1. PROFILE ANALYSIS SUMMARY */}
+      {/* 1. PROFILE ANALYSIS SUMMARY - REFINED LIGHT THEME */}
       <section className="mb-12">
-        <div className="bg-[#0F172A] rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden">
-          {/* Decorative element */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-3xl rounded-full -mr-20 -mt-20"></div>
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
+          {/* Subtle Decorative Gradient */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 blur-3xl rounded-full -mr-20 -mt-20"></div>
           
           <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
-            <div className="bg-blue-600 p-4 rounded-2xl text-white shadow-xl shadow-blue-500/20">
-              <BrainCircuit size={32} />
+            <div className="bg-slate-900 p-4 rounded-2xl text-white shadow-lg">
+              <BookOpen size={28} />
             </div>
             <div className="flex-grow">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-blue-400 font-bold text-[10px] uppercase tracking-[0.3em]">System Analysis</span>
-                <div className="h-px bg-slate-800 flex-grow"></div>
+                <span className="text-blue-600 font-bold text-[10px] uppercase tracking-[0.3em]">System Synthesis</span>
+                <div className="h-px bg-slate-100 flex-grow"></div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Persona Intelligence Context</h3>
-              <p className="text-slate-300 text-lg leading-relaxed mb-6 max-w-3xl">
-                {analysisContext || "Synthesizing industry shifts and frontier model capabilities optimized for your professional standing."}
+              <h3 className="text-2xl font-bold text-slate-900 mb-4 tracking-tight">Profile Understanding & Strategic Scope</h3>
+              <p className="text-slate-600 text-lg leading-relaxed mb-6 max-w-4xl font-medium">
+                {analysisContext || "As interpreted from your input, we are synthesizing industry shifts and frontier model capabilities optimized for your professional standing and specific challenges."}
               </p>
               
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2">
                 {profileFocusAreas.map((area, i) => (
-                  <span key={i} className="px-4 py-2 bg-slate-800/50 border border-slate-700 text-slate-100 text-xs font-bold rounded-lg uppercase tracking-wider">
+                  <span key={i} className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-700 text-[10px] font-extrabold rounded-lg uppercase tracking-wider">
                     {area}
                   </span>
                 ))}

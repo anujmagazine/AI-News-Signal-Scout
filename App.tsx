@@ -54,7 +54,7 @@ const App: React.FC = () => {
 
     lines.forEach(line => {
       const lower = line.toLowerCase().trim();
-      if (lower.startsWith('analysis context:')) analysisContext = line.split(':')[1]?.trim() || '';
+      if (lower.startsWith('profile understanding:')) analysisContext = line.split(':')[1]?.trim() || '';
       else if (lower.startsWith('focus areas:')) focusAreas = line.split(':')[1]?.split(';').map(f => f.trim()) || [];
       else if (lower.startsWith('strategic summary:')) strategicSummary = line.split(':')[1]?.trim() || '';
       else if (lower.startsWith('ground-level summary:')) groundLevelSummary = line.split(':')[1]?.trim() || '';
@@ -148,12 +148,13 @@ const App: React.FC = () => {
         - FILTERING: Rigorous exclusion of generic tech blogs, SEO-spam, and listicles. If a signal is found on a blog, trace it to the primary source (Whitepaper/Official Announcement) before including.
 
         MANDATE:
-        1. PROFILE SYNTHESIS: Summarize the user's "Focus Areas" (3-5 specific domains or challenges).
-        2. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
-        3. OUTPUT REQUIREMENT: For every item, the 'Source' field MUST cite the Primary Source (e.g., 'Nature Medicine', 'Anthropic Research', 'Official Microsoft Blog') rather than a secondary aggregator.
+        1. PROFILE SYNTHESIS: Provide "Profile Understanding" (2-3 sentences summarizing the user's role, seniority, and core strategic mission as interpreted from the provided input).
+        2. FOCUS AREAS: List 3-5 specific domains or challenges.
+        3. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
+        4. OUTPUT REQUIREMENT: For every item, the 'Source' field MUST cite the Primary Source rather than a secondary aggregator.
 
         OUTPUT FORMAT (Use ||| strictly as the separator between sections):
-        Analysis Context: [Brief 1-sentence analytical theme]
+        Profile Understanding: [Your interpretation of the user's role and strategic scope]
         Focus Areas: [Area 1; Area 2; Area 3]
         Strategic Summary: [Concise summary sentence for high-level dashboard]
         Ground-level Summary: [Concise summary sentence for high-level dashboard]
@@ -168,12 +169,6 @@ const App: React.FC = () => {
         Action: [Specific Strategic Move]
         Reason: [Justification]
         |||
-        Category: Ground-level
-        Headline: [Tool/Model Title]
-        Source: [PRIMARY SOURCE NAME]
-        ...
-        Scenario: [How the user uses this today]
-        ...
         (Repeat until you have 5 per category)
       `;
 

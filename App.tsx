@@ -100,7 +100,6 @@ const App: React.FC = () => {
     setState(prev => ({ ...prev, profession, file, step: 'sifting', error: null }));
 
     try {
-      // Use the API KEY from process.env
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const parts: any[] = [];
 
@@ -121,6 +120,15 @@ const App: React.FC = () => {
       const todayStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
       const oneMonthAgoStr = oneMonthAgo.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+      // 1. Define the Base Signal Layer
+      const baseSignalLayer = `
+        BASE SIGNAL LAYER (Categorized Trusted Sources):
+        - Labs: OpenAI, Anthropic, Google DeepMind, Meta AI Research, Mistral, Microsoft Research.
+        - Technical: Hugging Face, GitHub Engineering.
+        - Strategic: Sequoia Capital, a16z (Andreessen Horowitz), Y Combinator.
+        - Reputable News: The Information, Wired, TechCrunch.
+      `;
+
       const promptText = `
         You are a world-class strategic intelligence analyst. 
         Your task is to synthesize the latest AI news strictly from the last 30 days (${oneMonthAgoStr} to ${todayStr}) for a specific leader.
@@ -129,16 +137,20 @@ const App: React.FC = () => {
         ${profession}
         ${file ? "[Profile document attached]" : ""}
 
+        ${baseSignalLayer}
+
+        2. DYNAMIC DOMAIN INFERENCE:
+        Based on the user's profile (${profession}), IDENTIFY 3-5 top-tier, authoritative industry publications or academic journals 
+        (e.g., if Legal -> ABA Journal, Stanford CodeX; if Medical -> JAMA, Nature Medicine). Do not use generic news sites.
+
+        3. SEARCH MANDATE & FILTERING:
+        - SEARCH SCOPE: You are restricted to searching ONLY within the Categorized Base Signal Layer list above AND the high-authority domain sources you identified for this profession.
+        - FILTERING: Rigorous exclusion of generic tech blogs, SEO-spam, and listicles. If a signal is found on a blog, trace it to the primary source (Whitepaper/Official Announcement) before including.
+
         MANDATE:
-        1. PROFILE SYNTHESIS: Summarize the user's "Focus Areas" (3-5 specific domains or challenges they care about based on their profile).
+        1. PROFILE SYNTHESIS: Summarize the user's "Focus Areas" (3-5 specific domains or challenges).
         2. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
-        3. COVERAGE: 
-           - Include major labs (OpenAI, Google, Anthropic, Microsoft, Meta).
-           - Include specialized AI companies or research relevant specifically to the user's industry/domain.
-        
-        CATEGORIES:
-        - STRATEGIC (Direction Sense): Reshaping industries, ethics, governance, major model releases (e.g. GPT-5, Gemini 3), market shifts.
-        - GROUND-LEVEL (Execution Sense): Practical tools, frontier features, specific workflow applications, "Day-in-the-life" scenarios.
+        3. OUTPUT REQUIREMENT: For every item, the 'Source' field MUST cite the Primary Source (e.g., 'Nature Medicine', 'Anthropic Research', 'Official Microsoft Blog') rather than a secondary aggregator.
 
         OUTPUT FORMAT (Use ||| strictly as the separator between sections):
         Analysis Context: [Brief 1-sentence analytical theme]
@@ -148,7 +160,7 @@ const App: React.FC = () => {
         |||
         Category: Strategic
         Headline: [Concise Title]
-        Source: [Source]
+        Source: [PRIMARY SOURCE NAME]
         Date: [Date]
         Summary: [Concise executive summary]
         Relevance: [Why this matters specifically to the user]
@@ -156,7 +168,13 @@ const App: React.FC = () => {
         Action: [Specific Strategic Move]
         Reason: [Justification]
         |||
-        (Repeat for all items, ensuring 5 per category)
+        Category: Ground-level
+        Headline: [Tool/Model Title]
+        Source: [PRIMARY SOURCE NAME]
+        ...
+        Scenario: [How the user uses this today]
+        ...
+        (Repeat until you have 5 per category)
       `;
 
       parts.push({ text: promptText });
@@ -166,11 +184,10 @@ const App: React.FC = () => {
         contents: { parts },
         config: {
           tools: [{ googleSearch: {} }],
-          temperature: 0.1, // Higher precision
+          temperature: 0.1,
         }
       });
 
-      // Directly access .text property
       const text = response.text || '';
       const parsed = parseResponse(text);
       

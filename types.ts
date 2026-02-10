@@ -27,6 +27,7 @@ export interface AppState {
   newsItems: NewsItem[];
   groundingSources: GroundingSource[];
   analysisContext: string;
+  profileFocusAreas: string[]; // Added: summarized profile focus
   strategicSummary: string;
   groundLevelSummary: string;
   error: string | null;

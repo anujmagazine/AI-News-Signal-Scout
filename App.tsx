@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
+// Added AlertTriangle import from lucide-react
+import { AlertTriangle } from 'lucide-react';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import NewsResults from './components/NewsResults';
@@ -14,6 +16,7 @@ const App: React.FC = () => {
     newsItems: [],
     groundingSources: [],
     analysisContext: '',
+    profileFocusAreas: [],
     strategicSummary: '',
     groundLevelSummary: '',
     error: null,
@@ -32,19 +35,27 @@ const App: React.FC = () => {
     });
   };
 
-  const parseResponse = (text: string): { context: string; strategicSummary: string; groundLevelSummary: string; items: NewsItem[] } => {
+  const parseResponse = (text: string): { 
+    context: string; 
+    focusAreas: string[];
+    strategicSummary: string; 
+    groundLevelSummary: string; 
+    items: NewsItem[] 
+  } => {
     const parts = text.split('|||').map(s => s.trim());
     
     const headerSection = parts[0] || '';
     const lines = headerSection.split('\n');
     
     let analysisContext = '';
+    let focusAreas: string[] = [];
     let strategicSummary = '';
     let groundLevelSummary = '';
 
     lines.forEach(line => {
-      const lower = line.toLowerCase();
+      const lower = line.toLowerCase().trim();
       if (lower.startsWith('analysis context:')) analysisContext = line.split(':')[1]?.trim() || '';
+      else if (lower.startsWith('focus areas:')) focusAreas = line.split(':')[1]?.split(';').map(f => f.trim()) || [];
       else if (lower.startsWith('strategic summary:')) strategicSummary = line.split(':')[1]?.trim() || '';
       else if (lower.startsWith('ground-level summary:')) groundLevelSummary = line.split(':')[1]?.trim() || '';
     });
@@ -82,13 +93,14 @@ const App: React.FC = () => {
       }
     });
 
-    return { context: analysisContext, strategicSummary, groundLevelSummary, items };
+    return { context: analysisContext, focusAreas, strategicSummary, groundLevelSummary, items };
   };
 
   const handleSift = async (profession: string, file: File | null) => {
     setState(prev => ({ ...prev, profession, file, step: 'sifting', error: null }));
 
     try {
+      // Use the API KEY from process.env
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const parts: any[] = [];
 
@@ -110,53 +122,55 @@ const App: React.FC = () => {
       const oneMonthAgoStr = oneMonthAgo.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
       const promptText = `
-        You are an elite intelligence analyst for a leader. 
-        Apply the SIFT framework to find and process AI news from the last month (${oneMonthAgoStr} to ${todayStr}).
+        You are a world-class strategic intelligence analyst. 
+        Your task is to synthesize the latest AI news strictly from the last 30 days (${oneMonthAgoStr} to ${todayStr}) for a specific leader.
 
         USER PROFILE:
         ${profession}
         ${file ? "[Profile document attached]" : ""}
 
-        TASK:
-        1. FIRST, provide a brief "Analysis Context" on the user's strategic focus.
-        2. Provide a "Strategic Summary" (2-3 concise bullet points about high-level shifts).
-        3. Provide a "Ground-level Summary" (2-3 concise bullet points about tactical tools/scenarios).
-        4. Deliver exactly 4-6 high-signal items split into TWO categories:
-           Category 1: Strategic View (10,000-ft perspective)
-           Category 2: Ground-level View (Execution sense)
+        MANDATE:
+        1. PROFILE SYNTHESIS: Summarize the user's "Focus Areas" (3-5 specific domains or challenges they care about based on their profile).
+        2. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
+        3. COVERAGE: 
+           - Include major labs (OpenAI, Google, Anthropic, Microsoft, Meta).
+           - Include specialized AI companies or research relevant specifically to the user's industry/domain.
+        
+        CATEGORIES:
+        - STRATEGIC (Direction Sense): Reshaping industries, ethics, governance, major model releases (e.g. GPT-5, Gemini 3), market shifts.
+        - GROUND-LEVEL (Execution Sense): Practical tools, frontier features, specific workflow applications, "Day-in-the-life" scenarios.
 
-        OUTPUT FORMAT:
-        Analysis Context: [Summary]
-        Strategic Summary: [Point 1; Point 2; Point 3]
-        Ground-level Summary: [Point 1; Point 2; Point 3]
+        OUTPUT FORMAT (Use ||| strictly as the separator between sections):
+        Analysis Context: [Brief 1-sentence analytical theme]
+        Focus Areas: [Area 1; Area 2; Area 3]
+        Strategic Summary: [Concise summary sentence for high-level dashboard]
+        Ground-level Summary: [Concise summary sentence for high-level dashboard]
         |||
         Category: Strategic
-        Headline: [Title]
+        Headline: [Concise Title]
         Source: [Source]
         Date: [Date]
-        Summary: [Summary]
-        Relevance: [Strategic impact]
+        Summary: [Concise executive summary]
+        Relevance: [Why this matters specifically to the user]
         Priority: [High/Medium/Low]
-        Action: [Next Step]
-        Reason: [Why this action]
+        Action: [Specific Strategic Move]
+        Reason: [Justification]
         |||
-        Category: Ground-level
-        Headline: [Tool/Model Title]
-        ...
-        Scenario: [How the user uses this today]
-        ...
+        (Repeat for all items, ensuring 5 per category)
       `;
 
       parts.push({ text: promptText });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-3-pro-preview',
         contents: { parts },
         config: {
           tools: [{ googleSearch: {} }],
+          temperature: 0.1, // Higher precision
         }
       });
 
+      // Directly access .text property
       const text = response.text || '';
       const parsed = parseResponse(text);
       
@@ -173,6 +187,7 @@ const App: React.FC = () => {
         step: 'results',
         newsItems: parsed.items,
         analysisContext: parsed.context,
+        profileFocusAreas: parsed.focusAreas,
         strategicSummary: parsed.strategicSummary,
         groundLevelSummary: parsed.groundLevelSummary,
         groundingSources: sources
@@ -183,7 +198,7 @@ const App: React.FC = () => {
       setState(prev => ({
         ...prev,
         step: 'input',
-        error: "Failed to analyze news. Please try again."
+        error: "Intelligence gathering failed. Please check your role description and try again."
       }));
     }
   };
@@ -195,6 +210,7 @@ const App: React.FC = () => {
       newsItems: [], 
       groundingSources: [], 
       analysisContext: '',
+      profileFocusAreas: [],
       strategicSummary: '',
       groundLevelSummary: '' 
     }));
@@ -202,8 +218,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-      <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#1E293B] font-sans">
+      <div className="container mx-auto px-4 py-8">
         <Header />
         
         {state.step === 'input' && (
@@ -211,10 +227,13 @@ const App: React.FC = () => {
         )}
 
         {state.step === 'sifting' && (
-          <div className="max-w-2xl mx-auto text-center py-20 animate-fade-in">
-             <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-             <h2 className="text-2xl font-bold mb-2">Analyzing the Signal...</h2>
-             <p className="text-gray-500">Scanning global news, synthesizing strategic perspectives, and mapping ground-level execution scenarios.</p>
+          <div className="max-w-2xl mx-auto text-center py-24 animate-fade-in">
+             <div className="relative w-20 h-20 mx-auto mb-8">
+                <div className="absolute inset-0 border-4 border-blue-600/20 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+             </div>
+             <h2 className="text-3xl font-extrabold mb-3 tracking-tight">Sifting Global Intelligence</h2>
+             <p className="text-slate-500 text-lg">Scanning major AI labs and industry-specific developments for signals relevant to your profile.</p>
           </div>
         )}
 
@@ -223,6 +242,7 @@ const App: React.FC = () => {
             items={state.newsItems} 
             sources={state.groundingSources} 
             analysisContext={state.analysisContext}
+            profileFocusAreas={state.profileFocusAreas}
             strategicSummary={state.strategicSummary}
             groundLevelSummary={state.groundLevelSummary}
             onReset={handleReset} 
@@ -230,8 +250,9 @@ const App: React.FC = () => {
         )}
 
         {state.error && (
-          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50">
-            {state.error}
+          <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-4 rounded-xl shadow-2xl z-50 animate-fade-in flex items-center gap-3">
+            <AlertTriangle size={20} />
+            <span className="font-semibold">{state.error}</span>
           </div>
         )}
       </div>

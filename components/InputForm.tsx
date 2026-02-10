@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, Search, X } from 'lucide-react';
 
@@ -24,9 +25,11 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
     }
   };
 
+  const isReady = profession.trim().length > 0 || file !== null;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profession.trim()) return;
+    if (!isReady) return;
     onSift(profession, file);
   };
 
@@ -35,27 +38,45 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <div className="bg-gray-50 p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">Personalize Your Briefing</h2>
-          <p className="text-gray-500 text-sm mt-1">Tell us about your role so we can filter out the hype.</p>
+          <p className="text-gray-500 text-sm mt-1">Provide a description OR upload a file to define your strategic context.</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Role & Profession Description
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Role & Profession Description
+              </label>
+              {!file && !profession.trim() && (
+                <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Required if no file</span>
+              )}
+            </div>
             <textarea
               value={profession}
               onChange={(e) => setProfession(e.target.value)}
               placeholder="e.g. I am a CTO at a mid-sized fintech company focused on fraud detection and customer experience..."
               className="w-full h-32 p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-black focus:border-black transition-all resize-none text-gray-800"
-              required
             />
           </div>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500 font-medium">OR</span>
+            </div>
+          </div>
+
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Attach Profile / Resume (Optional)
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Attach Profile / Resume
+              </label>
+              {!file && !profession.trim() && (
+                <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Required if no text</span>
+              )}
+            </div>
             <div 
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
@@ -100,10 +121,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
 
           <button
             type="submit"
-            disabled={isLoading || !profession.trim()}
+            disabled={isLoading || !isReady}
             className={`
               w-full py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all shadow-md
-              ${isLoading || !profession.trim()
+              ${isLoading || !isReady
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-black text-white hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5'
               }

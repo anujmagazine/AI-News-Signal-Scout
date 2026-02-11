@@ -97,7 +97,6 @@ const NewsResults: React.FC<NewsResultsProps> = ({
 
   return (
     <div className="animate-fade-in max-w-6xl mx-auto pb-32">
-      {/* HEADER ACTION - Removed redundant "Intelligence Report" heading */}
       <div className="flex justify-end mb-8">
         <button 
           onClick={onReset}
@@ -108,10 +107,9 @@ const NewsResults: React.FC<NewsResultsProps> = ({
         </button>
       </div>
 
-      {/* 1. PROFILE ANALYSIS SUMMARY - REFINED LIGHT THEME */}
+      {/* 1. PROFILE ANALYSIS SUMMARY - REFINED FOR RELATABILITY */}
       <section className="mb-12">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
-          {/* Subtle Decorative Gradient */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 blur-3xl rounded-full -mr-20 -mt-20"></div>
           
           <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
@@ -120,21 +118,13 @@ const NewsResults: React.FC<NewsResultsProps> = ({
             </div>
             <div className="flex-grow">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-blue-600 font-bold text-[10px] uppercase tracking-[0.3em]">System Synthesis</span>
+                <span className="text-blue-600 font-bold text-[10px] uppercase tracking-[0.3em]">Report Context</span>
                 <div className="h-px bg-slate-100 flex-grow"></div>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4 tracking-tight">Profile Understanding & Strategic Scope</h3>
-              <p className="text-slate-600 text-lg leading-relaxed mb-6 max-w-4xl font-medium">
-                {analysisContext || "As interpreted from your input, we are synthesizing industry shifts and frontier model capabilities optimized for your professional standing and specific challenges."}
+              <h3 className="text-2xl font-bold text-slate-900 mb-4 tracking-tight">Who is this report for?</h3>
+              <p className="text-slate-600 text-lg leading-relaxed max-w-4xl font-medium">
+                {analysisContext || "Based on your background, this analysis focuses on the specific AI developments and industry shifts that align with your professional goals and core responsibilities."}
               </p>
-              
-              <div className="flex flex-wrap gap-2">
-                {profileFocusAreas.map((area, i) => (
-                  <span key={i} className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-700 text-[10px] font-extrabold rounded-lg uppercase tracking-wider">
-                    {area}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
         </div>

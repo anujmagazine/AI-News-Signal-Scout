@@ -148,14 +148,12 @@ const App: React.FC = () => {
         - FILTERING: Rigorous exclusion of generic tech blogs, SEO-spam, and listicles. If a signal is found on a blog, trace it to the primary source (Whitepaper/Official Announcement) before including.
 
         MANDATE:
-        1. PROFILE SYNTHESIS: Provide "Profile Understanding" (2-3 sentences summarizing the user's role, seniority, and core strategic mission as interpreted from the provided input).
-        2. FOCUS AREAS: List 3-5 specific domains or challenges.
-        3. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
-        4. OUTPUT REQUIREMENT: For every item, the 'Source' field MUST cite the Primary Source rather than a secondary aggregator.
+        1. PROFILE SYNTHESIS: Provide "Profile Understanding" (2-3 sentences. EXPLAIN in easy, relatable, and direct language what you understood about the user's role, their seniority, and what specifically they care about most in their current position).
+        2. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
+        3. OUTPUT REQUIREMENT: For every item, the 'Source' field MUST cite the Primary Source rather than a secondary aggregator.
 
         OUTPUT FORMAT (Use ||| strictly as the separator between sections):
-        Profile Understanding: [Your interpretation of the user's role and strategic scope]
-        Focus Areas: [Area 1; Area 2; Area 3]
+        Profile Understanding: [Your interpretation in easy language]
         Strategic Summary: [Concise summary sentence for high-level dashboard]
         Ground-level Summary: [Concise summary sentence for high-level dashboard]
         |||

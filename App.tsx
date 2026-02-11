@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
-// Added AlertTriangle import from lucide-react
 import { AlertTriangle } from 'lucide-react';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
@@ -16,7 +15,6 @@ const App: React.FC = () => {
     newsItems: [],
     groundingSources: [],
     analysisContext: '',
-    profileFocusAreas: [],
     strategicSummary: '',
     groundLevelSummary: '',
     error: null,
@@ -37,7 +35,6 @@ const App: React.FC = () => {
 
   const parseResponse = (text: string): { 
     context: string; 
-    focusAreas: string[];
     strategicSummary: string; 
     groundLevelSummary: string; 
     items: NewsItem[] 
@@ -48,14 +45,12 @@ const App: React.FC = () => {
     const lines = headerSection.split('\n');
     
     let analysisContext = '';
-    let focusAreas: string[] = [];
     let strategicSummary = '';
     let groundLevelSummary = '';
 
     lines.forEach(line => {
       const lower = line.toLowerCase().trim();
-      if (lower.startsWith('profile understanding:')) analysisContext = line.split(':')[1]?.trim() || '';
-      else if (lower.startsWith('focus areas:')) focusAreas = line.split(':')[1]?.split(';').map(f => f.trim()) || [];
+      if (lower.startsWith('analysis context:')) analysisContext = line.split(':')[1]?.trim() || '';
       else if (lower.startsWith('strategic summary:')) strategicSummary = line.split(':')[1]?.trim() || '';
       else if (lower.startsWith('ground-level summary:')) groundLevelSummary = line.split(':')[1]?.trim() || '';
     });
@@ -68,23 +63,23 @@ const App: React.FC = () => {
       const item: any = { id: `news-${index}`, category: 'strategic' };
       
       itemLines.forEach(line => {
-        const [key, ...valueParts] = line.split(':');
-        if (key && valueParts.length > 0) {
-          const value = valueParts.join(':').trim();
-          const lowerKey = key.trim().toLowerCase();
+        const splitIdx = line.indexOf(':');
+        if (splitIdx !== -1) {
+          const key = line.substring(0, splitIdx).trim().toLowerCase();
+          const value = line.substring(splitIdx + 1).trim();
           
-          if (lowerKey.includes('category')) {
+          if (key.includes('category')) {
             item.category = value.toLowerCase().includes('ground') ? 'ground-level' : 'strategic';
           }
-          else if (lowerKey.includes('headline')) item.headline = value;
-          else if (lowerKey.includes('source')) item.source = value;
-          else if (lowerKey.includes('date')) item.date = value;
-          else if (lowerKey.includes('summary')) item.summary = value;
-          else if (lowerKey.includes('relevance')) item.relevance = value;
-          else if (lowerKey.includes('priority')) item.priority = value as any;
-          else if (lowerKey.includes('action') && !lowerKey.includes('reason')) item.action = value;
-          else if (lowerKey.includes('reason')) item.actionReason = value;
-          else if (lowerKey.includes('scenario')) item.scenario = value;
+          else if (key.includes('headline')) item.headline = value;
+          else if (key.includes('source')) item.source = value;
+          else if (key.includes('date')) item.date = value;
+          else if (key.includes('summary')) item.summary = value;
+          else if (key.includes('relevance')) item.relevance = value;
+          else if (key.includes('priority')) item.priority = value as any;
+          else if (key.includes('action') && !key.includes('reason')) item.action = value;
+          else if (key.includes('reason')) item.actionReason = value;
+          else if (key.includes('scenario')) item.scenario = value;
         }
       });
 
@@ -93,7 +88,7 @@ const App: React.FC = () => {
       }
     });
 
-    return { context: analysisContext, focusAreas, strategicSummary, groundLevelSummary, items };
+    return { context: analysisContext, strategicSummary, groundLevelSummary, items };
   };
 
   const handleSift = async (profession: string, file: File | null) => {
@@ -103,14 +98,25 @@ const App: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const parts: any[] = [];
 
+      // Improved file handling: Word docs/unknown types are treated as text where possible
       if (file) {
-        const base64Data = await fileToBase64(file);
-        parts.push({
-          inlineData: {
-            data: base64Data,
-            mimeType: file.type
+        if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+          const base64Data = await fileToBase64(file);
+          parts.push({
+            inlineData: {
+              data: base64Data,
+              mimeType: file.type
+            }
+          });
+        } else {
+          // Fallback for .txt or other formats: read as text
+          try {
+            const text = await file.text();
+            parts.push({ text: `USER PROFILE DOCUMENT CONTENT:\n${text}` });
+          } catch (e) {
+            console.warn("Could not read file as text, skipping file part.");
           }
-        });
+        }
       }
 
       const today = new Date();
@@ -120,7 +126,6 @@ const App: React.FC = () => {
       const todayStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
       const oneMonthAgoStr = oneMonthAgo.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-      // 1. Define the Base Signal Layer
       const baseSignalLayer = `
         BASE SIGNAL LAYER (Categorized Trusted Sources):
         - Labs: OpenAI, Anthropic, Google DeepMind, Meta AI Research, Mistral, Microsoft Research.
@@ -135,45 +140,43 @@ const App: React.FC = () => {
 
         USER PROFILE:
         ${profession}
-        ${file ? "[Profile document attached]" : ""}
 
         ${baseSignalLayer}
 
         2. DYNAMIC DOMAIN INFERENCE:
-        Based on the user's profile (${profession}), IDENTIFY 3-5 top-tier, authoritative industry publications or academic journals 
-        (e.g., if Legal -> ABA Journal, Stanford CodeX; if Medical -> JAMA, Nature Medicine). Do not use generic news sites.
+        Based on the user's profile, IDENTIFY 3-5 top-tier, authoritative industry publications or academic journals.
 
         3. SEARCH MANDATE & FILTERING:
-        - SEARCH SCOPE: You are restricted to searching ONLY within the Categorized Base Signal Layer list above AND the high-authority domain sources you identified for this profession.
-        - FILTERING: Rigorous exclusion of generic tech blogs, SEO-spam, and listicles. If a signal is found on a blog, trace it to the primary source (Whitepaper/Official Announcement) before including.
+        - SEARCH SCOPE: SEARCH ONLY within the Categorized Base Signal Layer list above AND the high-authority domain sources you identified.
+        - FILTERING: Rigorous exclusion of generic tech blogs.
 
         MANDATE:
-        1. PROFILE SYNTHESIS: Provide "Profile Understanding" (2-3 sentences. EXPLAIN in easy, relatable, and direct language what you understood about the user's role, their seniority, and what specifically they care about most in their current position).
-        2. QUANTITY: Find EXACTLY 5 high-signal Strategic View items and EXACTLY 5 high-signal Ground-level View items.
-        3. OUTPUT REQUIREMENT: For every item, the 'Source' field MUST cite the Primary Source rather than a secondary aggregator.
+        1. PROFILE SYNTHESIS: Provide "Analysis Context" (Strictly summarize the USER PROFILE in 1 sentence. Example: 'Intelligence tailored for a Senior IP Lawyer focused on copyright law.').
+        2. QUANTITY: Find EXACTLY 5 Strategic items and EXACTLY 5 Ground-level items.
+        3. OUTPUT REQUIREMENT: Citation field MUST cite the Primary Source.
 
         OUTPUT FORMAT (Use ||| strictly as the separator between sections):
-        Profile Understanding: [Your interpretation in easy language]
-        Strategic Summary: [Concise summary sentence for high-level dashboard]
-        Ground-level Summary: [Concise summary sentence for high-level dashboard]
+        Analysis Context: [1 sentence profile summary]
+        Strategic Summary: [Dashboard summary sentence]
+        Ground-level Summary: [Dashboard summary sentence]
         |||
         Category: Strategic
-        Headline: [Concise Title]
-        Source: [PRIMARY SOURCE NAME]
+        Headline: [Title]
+        Source: [Source]
         Date: [Date]
-        Summary: [Concise executive summary]
-        Relevance: [Why this matters specifically to the user]
+        Summary: [Summary]
+        Relevance: [Why this matters to user]
         Priority: [High/Medium/Low]
-        Action: [Specific Strategic Move]
+        Action: [Strategic Move]
         Reason: [Justification]
         |||
-        (Repeat until you have 5 per category)
+        (Repeat 10 times total)
       `;
 
       parts.push({ text: promptText });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
+        model: 'gemini-3-flash-preview',
         contents: { parts },
         config: {
           tools: [{ googleSearch: {} }],
@@ -192,12 +195,15 @@ const App: React.FC = () => {
         }
       });
 
+      if (parsed.items.length === 0) {
+        throw new Error("No intelligence items could be extracted. Please refine your profile.");
+      }
+
       setState(prev => ({
         ...prev,
         step: 'results',
         newsItems: parsed.items,
         analysisContext: parsed.context,
-        profileFocusAreas: parsed.focusAreas,
         strategicSummary: parsed.strategicSummary,
         groundLevelSummary: parsed.groundLevelSummary,
         groundingSources: sources
@@ -205,10 +211,14 @@ const App: React.FC = () => {
 
     } catch (err: any) {
       console.error("SIFT Error:", err);
+      const errorMessage = err?.message?.includes("User location") 
+        ? "Please enable location access for more localized results." 
+        : "Gathering failed. Please refine your profile and try again.";
+        
       setState(prev => ({
         ...prev,
         step: 'input',
-        error: "Intelligence gathering failed. Please check your role description and try again."
+        error: errorMessage
       }));
     }
   };
@@ -220,9 +230,9 @@ const App: React.FC = () => {
       newsItems: [], 
       groundingSources: [], 
       analysisContext: '',
-      profileFocusAreas: [],
       strategicSummary: '',
-      groundLevelSummary: '' 
+      groundLevelSummary: '',
+      error: null
     }));
     window.scrollTo(0, 0);
   };
@@ -237,13 +247,16 @@ const App: React.FC = () => {
         )}
 
         {state.step === 'sifting' && (
-          <div className="max-w-2xl mx-auto text-center py-24 animate-fade-in">
-             <div className="relative w-20 h-20 mx-auto mb-8">
-                <div className="absolute inset-0 border-4 border-blue-600/20 rounded-full"></div>
+          <div className="max-w-2xl mx-auto text-center py-32 animate-fade-in">
+             <div className="relative w-24 h-24 mx-auto mb-10">
+                <div className="absolute inset-0 border-4 border-blue-600/10 rounded-full"></div>
                 <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
              </div>
-             <h2 className="text-3xl font-extrabold mb-3 tracking-tight">Sifting Global Intelligence</h2>
-             <p className="text-slate-500 text-lg">Scanning major AI labs and industry-specific developments for signals relevant to your profile.</p>
+             <h2 className="text-3xl font-black mb-4 tracking-tight text-slate-900">Identifying Relevant Signals</h2>
+             <div className="space-y-3">
+               <p className="text-slate-500 text-lg font-medium">Scanning frontier AI labs and research papers.</p>
+               <p className="text-slate-400 text-sm font-semibold uppercase tracking-widest">Cross-referencing with your profile...</p>
+             </div>
           </div>
         )}
 
@@ -252,7 +265,6 @@ const App: React.FC = () => {
             items={state.newsItems} 
             sources={state.groundingSources} 
             analysisContext={state.analysisContext}
-            profileFocusAreas={state.profileFocusAreas}
             strategicSummary={state.strategicSummary}
             groundLevelSummary={state.groundLevelSummary}
             onReset={handleReset} 
@@ -260,9 +272,9 @@ const App: React.FC = () => {
         )}
 
         {state.error && (
-          <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-4 rounded-xl shadow-2xl z-50 animate-fade-in flex items-center gap-3">
+          <div className="fixed bottom-6 right-6 bg-rose-600 text-white px-6 py-4 rounded-xl shadow-2xl z-50 animate-fade-in flex items-center gap-3">
             <AlertTriangle size={20} />
-            <span className="font-semibold">{state.error}</span>
+            <span className="font-bold">{state.error}</span>
           </div>
         )}
       </div>

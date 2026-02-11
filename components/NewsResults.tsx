@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { 
-  ExternalLink, ShieldAlert, Target, Play, RefreshCw, 
-  AlertTriangle, Calendar, UserCheck, Globe, Zap, Clock, 
-  ChevronRight, List, BrainCircuit, Activity, BookOpen
+  ExternalLink, Target, Play, RefreshCw, 
+  Calendar, Globe, Zap, Clock, 
+  ChevronRight, List, Activity, BookOpen
 } from 'lucide-react';
 import { NewsItem, GroundingSource } from '../types';
 
@@ -11,7 +11,6 @@ interface NewsResultsProps {
   items: NewsItem[];
   sources: GroundingSource[];
   analysisContext: string;
-  profileFocusAreas: string[];
   strategicSummary: string;
   groundLevelSummary: string;
   onReset: () => void;
@@ -21,7 +20,6 @@ const NewsResults: React.FC<NewsResultsProps> = ({
   items, 
   sources, 
   analysisContext, 
-  profileFocusAreas,
   strategicSummary, 
   groundLevelSummary, 
   onReset 
@@ -107,7 +105,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
         </button>
       </div>
 
-      {/* 1. PROFILE ANALYSIS SUMMARY - REFINED FOR RELATABILITY */}
+      {/* 1. PROFILE ANALYSIS SUMMARY */}
       <section className="mb-12">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 blur-3xl rounded-full -mr-20 -mt-20"></div>
@@ -123,14 +121,14 @@ const NewsResults: React.FC<NewsResultsProps> = ({
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-4 tracking-tight">Who is this report for?</h3>
               <p className="text-slate-600 text-lg leading-relaxed max-w-4xl font-medium">
-                {analysisContext || "Based on your background, this analysis focuses on the specific AI developments and industry shifts that align with your professional goals and core responsibilities."}
+                {analysisContext || "This analysis is personalized for your specific professional profile and strategic goals."}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. EXECUTIVE DASHBOARD (TOP 10 SUMMARY TABLE) */}
+      {/* 2. EXECUTIVE DASHBOARD */}
       <section className="mb-20">
         <div className="flex items-center gap-3 mb-6">
           <List className="text-slate-400" size={20} />
@@ -138,7 +136,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Strategic Table */}
+          {/* Strategic AI News */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div className="bg-blue-600 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-white">
@@ -170,7 +168,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
             </div>
           </div>
 
-          {/* Execution Table */}
+          {/* New AI Tools & Practical Updates */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div className="bg-emerald-600 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-white">
@@ -206,7 +204,6 @@ const NewsResults: React.FC<NewsResultsProps> = ({
 
       {/* 3. DETAILED DEEP DIVES */}
       <div className="space-y-32">
-        {/* STRATEGIC SECTION */}
         <section>
           <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
             <div className="flex items-center gap-4">
@@ -228,7 +225,6 @@ const NewsResults: React.FC<NewsResultsProps> = ({
           </div>
         </section>
 
-        {/* GROUND-LEVEL SECTION */}
         <section>
           <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
             <div className="flex items-center gap-4">
@@ -237,7 +233,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
               </div>
               <div>
                 <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">02. New Tools & Practical Updates</h3>
-                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-1">Tools, Workflow integrations & Practical scenarios</p>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-1">Workflow integrations, Tools & Technical scenarios</p>
               </div>
             </div>
             <div className="hidden md:flex gap-1 text-[10px] font-bold text-slate-400 items-center">

@@ -71,7 +71,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-semibold text-gray-700">
-                Attach Profile / Resume
+                Attach Profile / Resume (PDF or Text)
               </label>
               {!file && !profession.trim() && (
                 <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Required if no text</span>
@@ -90,7 +90,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
                 type="file" 
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                accept=".pdf,.txt,.doc,.docx"
+                accept=".pdf,.txt"
                 className="hidden"
               />
               
@@ -112,7 +112,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
                     <Upload size={20} />
                   </div>
                   <p className="text-sm text-gray-500">
-                    <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop PDF
+                    <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop PDF/TXT
                   </p>
                 </div>
               )}

@@ -97,18 +97,14 @@ const NewsResults: React.FC<NewsResultsProps> = ({
 
   return (
     <div className="animate-fade-in max-w-6xl mx-auto pb-32">
-      {/* HEADER ACTION */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
-        <div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Intelligence Report</h2>
-          <p className="text-slate-500 font-medium">Synthesized for your specific profile and industry.</p>
-        </div>
+      {/* HEADER ACTION - Removed redundant "Intelligence Report" heading */}
+      <div className="flex justify-end mb-8">
         <button 
           onClick={onReset}
           className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-black transition-all bg-white px-6 py-3 rounded-xl border border-slate-200 shadow-sm hover:shadow-md"
         >
           <RefreshCw size={16} />
-          New Intelligence Cycle
+          New Analysis
         </button>
       </div>
 

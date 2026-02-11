@@ -143,7 +143,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
             <div className="bg-blue-600 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-white">
                 <Globe size={18} />
-                <h5 className="font-bold text-sm tracking-tight">Strategic Intelligence</h5>
+                <h5 className="font-bold text-sm tracking-tight">Strategic AI News for You</h5>
               </div>
               <span className="text-[10px] bg-blue-700 text-blue-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">View 01</span>
             </div>
@@ -175,7 +175,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
             <div className="bg-emerald-600 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-white">
                 <Zap size={18} />
-                <h5 className="font-bold text-sm tracking-tight">Execution Sense</h5>
+                <h5 className="font-bold text-sm tracking-tight">New AI Tools & Practical Updates</h5>
               </div>
               <span className="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">View 02</span>
             </div>
@@ -214,7 +214,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                 <Globe size={24} />
               </div>
               <div>
-                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">01. Strategic Horizon</h3>
+                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">01. Strategic Horizons</h3>
                 <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-1">Market shifts, Governance & Fundamental breakthroughs</p>
               </div>
             </div>
@@ -236,7 +236,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                 <Zap size={24} />
               </div>
               <div>
-                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">02. Execution Sense</h3>
+                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">02. New Tools & Practical Updates</h3>
                 <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-1">Tools, Workflow integrations & Practical scenarios</p>
               </div>
             </div>

@@ -202,7 +202,18 @@ const NewsResults: React.FC<NewsResultsProps> = ({
         </div>
       </section>
 
-      {/* 3. DETAILED DEEP DIVES */}
+      {/* 3. DETAILED DEEP DIVES SEPARATOR */}
+      <div className="mt-32 mb-16">
+        <div className="h-px bg-slate-200 w-full mb-12"></div>
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase">In-Depth Intelligence</h2>
+          <p className="text-slate-500 mt-4 font-medium text-lg leading-relaxed">
+            A comprehensive breakdown of specific signals, highlighting their direct relevance to your professional strategy and actionable next steps.
+          </p>
+        </div>
+      </div>
+
+      {/* DETAILED SECTIONS */}
       <div className="space-y-32">
         <section>
           <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
@@ -211,7 +222,7 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                 <Globe size={24} />
               </div>
               <div>
-                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">01. Strategic Horizons</h3>
+                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight">01. Strategic AI News for you</h3>
                 <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-1">Market shifts, Governance & Fundamental breakthroughs</p>
               </div>
             </div>

@@ -130,9 +130,8 @@ const NewsResults: React.FC<NewsResultsProps> = ({
 
       {/* 2. EXECUTIVE DASHBOARD */}
       <section className="mb-20">
-        <div className="flex items-center gap-3 mb-6">
-          <List className="text-slate-400" size={20} />
-          <h4 className="font-bold text-sm text-slate-400 uppercase tracking-widest">Executive Dashboard (Top 10 Signals)</h4>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase">Executive Dashboard (Top 10 Signals)</h2>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

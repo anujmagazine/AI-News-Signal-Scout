@@ -42,9 +42,15 @@ const NewsResults: React.FC<NewsResultsProps> = ({
               {item.priority} Priority
             </span>
           </div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded">
-            {item.source}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100/50 px-2 py-1 rounded flex items-center gap-1.5">
+              <Calendar size={10} className="text-slate-500" />
+              {item.date}
+            </span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded">
+              {item.source}
+            </span>
+          </div>
         </div>
         
         <h3 className="text-2xl font-bold text-slate-900 mb-3 leading-tight group-hover:text-blue-700 transition-colors">
@@ -162,7 +168,11 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                     <span className="font-mono text-xs text-slate-300">0{i+1}</span>
                     <div className="flex-grow min-w-0">
                       <p className="font-bold text-sm text-slate-900 truncate group-hover:text-blue-600 transition-colors">{item.headline}</p>
-                      <p className="text-[11px] text-slate-500 font-medium truncate italic">{item.source}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-[11px] text-slate-500 font-medium truncate italic">{item.source}</p>
+                        <span className="text-[9px] text-slate-300">•</span>
+                        <p className="text-[10px] text-slate-400 font-semibold">{item.date}</p>
+                      </div>
                     </div>
                     <span className={`shrink-0 w-2 h-2 rounded-full ${item.priority === 'High' ? 'bg-rose-500' : item.priority === 'Medium' ? 'bg-amber-400' : 'bg-sky-400'}`} />
                   </div>
@@ -190,7 +200,11 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                     <span className="font-mono text-xs text-slate-300">0{i+1}</span>
                     <div className="flex-grow min-w-0">
                       <p className="font-bold text-sm text-slate-900 truncate group-hover:text-emerald-600 transition-colors">{item.headline}</p>
-                      <p className="text-[11px] text-slate-500 font-medium truncate italic">{item.source}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-[11px] text-slate-500 font-medium truncate italic">{item.source}</p>
+                        <span className="text-[9px] text-slate-300">•</span>
+                        <p className="text-[10px] text-slate-400 font-semibold">{item.date}</p>
+                      </div>
                     </div>
                     <span className={`shrink-0 w-2 h-2 rounded-full ${item.priority === 'High' ? 'bg-rose-500' : item.priority === 'Medium' ? 'bg-amber-400' : 'bg-sky-400'}`} />
                   </div>

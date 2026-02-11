@@ -138,7 +138,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSift, isLoading }) => {
             ) : (
               <>
                 <Search size={20} />
-                Generate Intelligence
+                Find relevant AI news for me
               </>
             )}
           </button>

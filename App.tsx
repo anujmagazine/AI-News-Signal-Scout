@@ -98,7 +98,6 @@ const App: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const parts: any[] = [];
 
-      // Improved file handling: Word docs/unknown types are treated as text where possible
       if (file) {
         if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
           const base64Data = await fileToBase64(file);
@@ -109,7 +108,6 @@ const App: React.FC = () => {
             }
           });
         } else {
-          // Fallback for .txt or other formats: read as text
           try {
             const text = await file.text();
             parts.push({ text: `USER PROFILE DOCUMENT CONTENT:\n${text}` });
@@ -151,12 +149,12 @@ const App: React.FC = () => {
         - FILTERING: Rigorous exclusion of generic tech blogs.
 
         MANDATE:
-        1. PROFILE SYNTHESIS: Provide "Analysis Context" (Strictly summarize the USER PROFILE in 1 sentence. Example: 'Intelligence tailored for a Senior IP Lawyer focused on copyright law.').
+        1. PROFILE SYNTHESIS: Provide "Analysis Context" (Strictly summarize the USER PROFILE in 2-3 highly relevant sentences, identifying specific goals, industry focus, and professional constraints found in the profile. Ensure it feels tailored and authoritative. Example: 'Intelligence tailored for a high-level corporate legal founder and board member focused on M&A, PE/VC, and legal talent development in India. The focus is on leveraging AI for cross-border transaction efficiency and developing new legal services frameworks.').
         2. QUANTITY: Find EXACTLY 5 Strategic items and EXACTLY 5 Ground-level items.
         3. OUTPUT REQUIREMENT: Citation field MUST cite the Primary Source.
 
         OUTPUT FORMAT (Use ||| strictly as the separator between sections):
-        Analysis Context: [1 sentence profile summary]
+        Analysis Context: [2-3 sentence profile summary]
         Strategic Summary: [Dashboard summary sentence]
         Ground-level Summary: [Dashboard summary sentence]
         |||

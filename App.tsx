@@ -141,6 +141,16 @@ const App: React.FC = () => {
 
         ${baseSignalLayer}
 
+        **CATEGORIES:**
+        **1. STRATEGIC (The 'Why' & 'Where'):**
+        *   Macro-trends, regulation/policy, major industry shifts, ethical debates, and competitor moves.
+        *   *Goal:* High-level situational awareness.
+
+        **2. GROUND-LEVEL (The 'How' & 'What'):**
+        *   **STRICT REQUIREMENT:** Must be tangible **Software Tools**, **Model Releases**, **Code Libraries**, **Prompt Techniques**, or **Specific 'How-To' Guides**.
+        *   **EXCLUSION:** Do NOT put general news, op-eds, or future predictions here.
+        *   *Goal:* Something the user can actually use, download, or implement in their workflow *today*.
+
         2. DYNAMIC DOMAIN INFERENCE:
         Based on the user's profile, IDENTIFY 3-5 top-tier, authoritative industry publications or academic journals.
 
@@ -150,7 +160,7 @@ const App: React.FC = () => {
 
         MANDATE:
         1. PROFILE SYNTHESIS: Provide "Analysis Context" (Strictly summarize the USER PROFILE in 2-3 highly relevant sentences, identifying specific goals, industry focus, and professional constraints found in the profile. Ensure it feels tailored and authoritative. Example: 'Intelligence tailored for a high-level corporate legal founder and board member focused on M&A, PE/VC, and legal talent development in India. The focus is on leveraging AI for cross-border transaction efficiency and developing new legal services frameworks.').
-        2. QUANTITY: Find EXACTLY 5 Strategic items and EXACTLY 5 Ground-level items.
+        2. QUANTITY: Target 5 high-signal Strategic items and 5 high-signal Ground-level items. **If genuine new tools are scarce for this specific profession, fill the Ground-level slots with specific "Use Case Scenarios" of major models (e.g. how to use Gemini 1.5 Pro for [User's Task]), rather than generic news.**
         3. OUTPUT REQUIREMENT: Citation field MUST cite the Primary Source.
 
         OUTPUT FORMAT (Use ||| strictly as the separator between sections):

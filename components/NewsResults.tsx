@@ -142,7 +142,6 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                 <Globe size={18} />
                 <h5 className="font-bold text-sm tracking-tight">Strategic AI News for You</h5>
               </div>
-              <span className="text-[10px] bg-blue-700 text-blue-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">View 01</span>
             </div>
             <div className="p-2 flex-grow">
               <div className="divide-y divide-slate-100">
@@ -174,7 +173,6 @@ const NewsResults: React.FC<NewsResultsProps> = ({
                 <Zap size={18} />
                 <h5 className="font-bold text-sm tracking-tight">New AI Tools & Practical Updates</h5>
               </div>
-              <span className="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">View 02</span>
             </div>
             <div className="p-2 flex-grow">
               <div className="divide-y divide-slate-100">
